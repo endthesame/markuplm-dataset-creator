@@ -1,0 +1,37 @@
+max_html_length: 8192
+remove_tags: ["script", "style", "nav", "footer", "img"]
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: "h1.title"
+        strategy: first-match
+        extract: text
+        validate: [required]
+        
+  authors:
+    selectors:
+      - type: css
+        selector: ".author-list > li"
+        strategy: multi-element
+        extract: text
+        validate: [list]
+        min_items: 1
+        max_items: 10
+        
+  isbn:
+    selectors:
+      - type: css
+        selector: "meta[name='isbn']"
+        strategy: first-match
+        extract: attr
+        attr: content
+        validate: [isbn]
+        
+  publication_date:
+    selectors:
+      - type: regex
+        selector: "\d{4}-\d{2}-\d{2}"
+        strategy: first-match
+        validate: [date]
