@@ -24,10 +24,12 @@ class MetadataExtractor:
     def __init__(self, config_path, label_map_path):
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = yaml.safe_load(f)
+        logging.info(f"Config loaded from: {config_path}")
 
         with open(label_map_path, 'r', encoding='utf-8') as f:
             self.label_map = json.load(f)
-        
+        logging.info(f"Label map loaded from: {config_path} with {self.label_map['label2id']}")
+
         self.label2id = self.label_map["label2id"]
         self.remove_tags = self.config.get('remove_tags', ['script', 'style'])
         self.max_html_length = self.config.get('max_html_length', 10000)
@@ -165,7 +167,6 @@ class MetadataExtractor:
                                     xpath = html_extractor.get_xpath(element=element)
                                 
                                 if xpath and xpath not in collected_xpaths:
-                                    print("value", value)
                                     field_data["text"].append(value)
                                     field_data["xpaths"].append(xpath)
                                     collected_xpaths.add(xpath)
@@ -180,7 +181,6 @@ class MetadataExtractor:
             node_labels = [self.label2id.get("O", 0)] * len(all_tokens)
             for field, xpaths in field_xpath_map.items():
                 label_id = self.label2id.get(field.upper(), 0)
-                print("FIELD UPPER: ",field.upper(), " LABEL ID: ", label_id)
                 for xpath in xpaths:
                     for idx, token_xpath in enumerate(all_xpaths):
                         if token_xpath == xpath:
@@ -254,9 +254,9 @@ def main(args):
                         "source_file": html_file.name,
                         "resource": args.resource,
                         "doc_type": args.doc_type,
-                        "html": result['html'],
-                        "tokens": result['tokens'],
-                        "xpaths": result['xpaths'],
+                        #"html": result['html'],
+                        #"tokens": result['tokens'],
+                        #"xpaths": result['xpaths'],
                         "metadata": result['metadata'],
                         "node_labels": result['node_labels'],
                         "processing_time": result['processing_time']

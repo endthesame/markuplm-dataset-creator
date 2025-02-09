@@ -1,0 +1,186 @@
+# Конфигурация обработки HTML
+remove_tags:           # Удаляемые HTML-теги
+  - script
+  - style
+  - footer
+max_html_length: 10000000 # Макс. длина обрабатываемого HTML
+
+# Поля для извлечения
+fields:
+  title:               # Название поля
+    max_items: 10       # Макс. количество значений
+    selectors:         # Последовательность селекторов
+      - type: css      # Тип селектора (css/xpath)
+        selector: '#page-title'  # CSS/XPath выражение
+        strategy: first  # Стратегия: first/multi
+        extract: text  # Извлекать: text/attr
+        post_process:  # Постобработка:
+          - strip      # Удаление пробелов
+          - unescape   # HTML-декодирование
+        # validate:      # Валидация:
+        #   - required   # Обязательное поле
+        #   - max_length: 300  # Макс. длина
+        # bio_scope: element
+      - type: xpath
+        selector: '//meta[@name="citation_title"]'
+        extract: attr
+        attr_name: content
+        # bio_scope: element
+
+  author:
+    max_items: 10
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+          - title
+      - type: css
+        selector: 'meta[name="DC.Contributor"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+          - title
+
+  date:
+    max_items: 10
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'  # Регулярное выражение
+        extract: attr
+        attr_name: content
+        regex: '(\d{4}-\d{2}-\d{2})'   # Извлечение части
+        post_process:
+          - normalize_date  # Нормализация даты
+        validate:
+          - date
+        # bio_scope: element
+      - type: css
+        selector: '.highwire-cite-published-year'  # Регулярное выражение
+        strategy: first
+        extract: text
+        regex: '(\d{4})'   # Извлечение части
+        post_process:
+          - normalize_date  # Нормализация даты
+        validate:
+          - date
+        # bio_scope: element
+      - type: css
+        selector: 'meta[name="DC.Date"]'  # Регулярное выражение
+        extract: attr
+        attr_name: content
+        regex: '(\d{4}-\d{2}-\d{2})'   # Извлечение части
+        post_process:
+          - normalize_date  # Нормализация даты
+        validate:
+          - date
+        # bio_scope: element
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+          - title
+      - type: css
+        selector: 'meta[name="DC.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+          - title
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="DC.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  abstract:
+    selectors:
+      - type: css
+        selector: 'meta[name="DC.Description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+  affilation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+
+# Пользовательские валидаторы
+validators:
+  max_length: '\S{1,120}'  # Регулярное выражение
