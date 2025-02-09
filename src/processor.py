@@ -16,7 +16,7 @@ from FeatureHTMLExtractor import HTMLExtractor
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    filename='processor.log'
+    filename='logs/processor.log'
 )
 logger = logging.getLogger(__name__)
 
@@ -242,27 +242,41 @@ def main(args):
     
     def generate_examples():
         html_files = list(Path(args.input_dir).glob("*.html"))
-        for html_file in tqdm(html_files, desc="Processing files"):
+        total_files = len(html_files)
+        
+        for i, html_file in enumerate(tqdm(html_files, desc="Processing files"), start=1):
             try:
+                logger.info(f"Processing {i}/{total_files}: file {html_file}")
                 with open(html_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 
                 result = extractor.extract_metadata(content)
                 if result:
+                    names_of_empty_fields = [
+                        field_name
+                        for field_name, field_data in result["metadata"].items()
+                        if not field_data["text"]
+                    ]
+
+                    if names_of_empty_fields:
+                        logging.warning(f"File {html_file} contains empty fields: {names_of_empty_fields}")
+
+                    logger.info(f"{i}/{total_files}: file {html_file} succeeded")
+                    
                     yield {
                         "id": str(uuid.uuid4()),
                         "source_file": html_file.name,
                         "resource": args.resource,
                         "doc_type": args.doc_type,
-                        #"html": result['html'],
-                        #"tokens": result['tokens'],
-                        #"xpaths": result['xpaths'],
+                        "html": result['html'],
+                        "tokens": result['tokens'],
+                        "xpaths": result['xpaths'],
                         "metadata": result['metadata'],
                         "node_labels": result['node_labels'],
                         "processing_time": result['processing_time']
                     }
             except Exception as e:
-                logger.error(f"File processing error: {str(e)}")
+                logger.error(f"Error processing file {html_file}: {str(e)}")
     
     dataset = Dataset.from_generator(
         generate_examples,
@@ -270,8 +284,8 @@ def main(args):
     )
     
     save_path = Path(args.output_dir) / f"{args.resource}_dataset"
-    dataset.to_json('output/test.jsonl')
-    dataset.save_to_disk(str(save_path))
+    dataset.to_json('output/test.jsonl', num_proc=args.num_proc)
+    dataset.save_to_disk(str(save_path), num_proc=args.num_proc)
     logger.info(f"Dataset saved to {save_path}")
 
 
@@ -283,6 +297,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", required=True, help="Path to YAML config file")
     parser.add_argument("--label_map", default="label_map.json", help="Path to JSON label map file")
     parser.add_argument("--output_dir", default="./output", help="Output directory")
+    parser.add_argument("--num_proc", default=4, type=int, help="Number of processes for saving data")
     
     args = parser.parse_args()
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
