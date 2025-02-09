@@ -5,3 +5,12 @@ __pycache__/
 
 #env files
 .venv
+
+#html data
+data
+
+#log files
+*.log
+
+#dev files
+dev_src
