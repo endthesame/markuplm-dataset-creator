@@ -8,7 +8,6 @@ max_html_length: 10000000 # Макс. длина обрабатываемого 
 # Поля для извлечения
 fields:
   title:               # Название поля
-    max_items: 10       # Макс. количество значений
     selectors:         # Последовательность селекторов
       - type: css      # Тип селектора (css/xpath)
         selector: '#page-title'  # CSS/XPath выражение
@@ -28,7 +27,6 @@ fields:
         # bio_scope: element
 
   author:
-    max_items: 10
     selectors:
       - type: css
         selector: 'meta[name="citation_author"]'
