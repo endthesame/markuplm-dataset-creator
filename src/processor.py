@@ -11,7 +11,7 @@ from lxml import etree
 from tqdm import tqdm
 import json
 from datasets import Dataset, Features, Value, Sequence
-from FeatureHTMLExtractor import HTMLExtractor
+from src.FeatureHTMLExtractor import HTMLExtractor
 # Настройка логирования
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
