@@ -1,5 +1,5 @@
 from lxml import html
-from typing import List, Tuple, Optional, Set, Pattern
+from typing import List, Tuple, Optional, Set, Pattern, Union
 import re
 
 class HTMLExtractor:
@@ -10,7 +10,9 @@ class HTMLExtractor:
         extract_attributes: bool = True,
         target_attrs: Optional[Set[str]] = None,
         exclude_pattern: Pattern = re.compile(r'^\s*$'),
-        exclude_tags: Set[str] = {'script', 'style', 'noscript'}
+        exclude_tags: Set[str] = {'script', 'style', 'noscript'},
+        split_tokens: bool = False,
+        split_token_pattern: Union[str, Pattern] = r'\w+',
     ):
         """
         Универсальный HTML-экстрактор текста с соответствующими XPath-путями
@@ -21,6 +23,8 @@ class HTMLExtractor:
         :param target_attrs: Множество целевых атрибутов для извлечения (None - все атрибуты)
         :param exclude_pattern: Регулярное выражение для фильтрации нежелательного текста
         :param exclude_tags: Множество тегов, которые следует игнорировать
+        :param split_tokens: Флаг включения разделения текста на отдельные токены
+        :param split_token_pattern: Паттерн для поиска токенов (регулярное выражение)
         """
         self.tree = html.fromstring(html_content)
         self.extract_text = extract_text
@@ -28,6 +32,14 @@ class HTMLExtractor:
         self.target_attrs = target_attrs
         self.exclude_pattern = exclude_pattern
         self.exclude_tags = exclude_tags
+        self.split_tokens = split_tokens
+        
+        # Инициализация паттерна для разделения токенов
+        if isinstance(split_token_pattern, str):
+            self.split_token_pattern = re.compile(split_token_pattern)
+        else:
+            self.split_token_pattern = split_token_pattern
+        
         self._texts: List[str] = []
         self._xpaths: List[str] = []
 
@@ -62,12 +74,26 @@ class HTMLExtractor:
         if element.tag in self.exclude_tags:
             return
 
-        # Если элемент не имеет дочерних элементов и содержит текст
-        if len(element) == 0 and element.text:
+        # Если элемент !(не имеет дочерних элементов) и содержит текст
+        if element.text:
             text = element.text.strip()
             if self._should_include(text):
                 self._texts.append(text)
                 self._xpaths.append(self.get_xpath(element))
+
+        # Обработка tail-текста (после закрывающего тега элемента)
+        self._process_element_tail(element)
+
+    def _process_element_tail(self, element):
+        """Обрабатывает tail-текст элемента"""
+        if element.tail:
+            tail_text = element.tail.strip()
+            if self._should_include(tail_text):
+                # Tail принадлежит родительскому элементу
+                parent = element.getparent()
+                if parent is not None and parent.tag not in self.exclude_tags:
+                    self._texts.append(tail_text)
+                    self._xpaths.append(self.get_xpath(parent))  # XPath родителя!
 
     def _process_element_attributes(self, element):
         """
@@ -101,17 +127,35 @@ class HTMLExtractor:
         if self.extract_attributes:
             self._process_element_attributes(element)
 
+    def _separate_elems_tokens(self):
+        """Разбивает выделенный текст из элемента по токенам"""
+        new_texts = []
+        new_xpaths = []
+        for text, xpath in zip(self._texts, self._xpaths):
+            # Ищем все совпадения с паттерном
+            tokens = self.split_token_pattern.findall(text)
+            for token in tokens:
+                # Применяем фильтрацию к каждому подтокену
+                if self._should_include(token):
+                    new_texts.append(token)
+                    new_xpaths.append(xpath)
+        self._texts = new_texts
+        self._xpaths = new_xpaths
+
+
     def extract(self) -> Tuple[List[str], List[str]]:
         """
         Запускает процесс извлечения данных из HTML.
-
-        :return: Кортеж с двумя списками: тексты и соответствующие XPath-пути
         """
         self._texts = []
         self._xpaths = []
 
         for element in self.tree.iter():
             self._process_element(element)
+
+        # Постобработка для разделения токенов
+        if self.split_tokens:
+            self._separate_elems_tokens()
 
         return self.texts, self.xpaths
 
