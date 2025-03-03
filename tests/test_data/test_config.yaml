@@ -1,0 +1,35 @@
+remove_tags: ['script', 'style']
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: meta[name="citation_title"]
+        extract: attr
+        attr_name: content
+        post_process: [strip]
+      - type: xpath
+        selector: //h1
+        extract: innerText
+        
+  authors:
+    selectors:
+      - type: css
+        selector: .authors span
+        extract: innerText
+        strategy: all
+        post_process: [strip]
+        
+  date:
+    selectors:
+      - type: css
+        selector: meta[name="citation_date"]
+        extract: attr
+        attr_name: content
+        validate: [date]
+        
+  abstract:
+    selectors:
+      - type: xpath
+        selector: //p[@class="abstract"]
+        extract: innerText
+        regex: '\btest\b \w+'

@@ -1,0 +1,13 @@
+{
+    "label2id": {
+        "O": 0,
+        "B-TITLE": 1,
+        "I-TITLE": 2,
+        "B-AUTHORS": 3,
+        "I-AUTHORS": 4,
+        "B-DATE": 5,
+        "I-DATE": 6,
+        "B-ABSTRACT": 7,
+        "I-ABSTRACT": 8
+    }
+}
