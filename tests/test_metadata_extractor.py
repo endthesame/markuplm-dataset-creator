@@ -95,14 +95,9 @@ def test_regex_processing(extractor, sample_html):
     
     assert found, "Expected 'test abstract' not found in processed text"
     
-    # Проверка меток
-    abstract_labels = [
-        result['node_labels'][i] 
-        for xpath in abstract_data['xpaths'] 
-        for i, xp in enumerate(result['xpaths']) if xp == xpath
-    ]
-    assert 7 in abstract_labels  # B-ABSTRACT
-    assert 8 in abstract_labels  # I-ABSTRACT
+    node_labesls = result["node_labels"]
+    assert 7 in node_labesls  # B-ABSTRACT
+    assert 8 in node_labesls  # I-ABSTRACT
 
 def test_html_cleaning(extractor):
     dirty_html = "<script>alert()</script><div>Clean<style type='text/css'>style</style><p>text</p></div>"
