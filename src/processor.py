@@ -11,7 +11,7 @@ from lxml import etree
 from tqdm import tqdm
 import json
 from datasets import Dataset, Features, Value, Sequence
-from src.FeatureHTMLExtractor import HTMLExtractor
+from .FeatureHTMLExtractor import HTMLExtractor
 # Настройка логирования
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -61,11 +61,10 @@ class MetadataExtractor:
             
             if 'regex' in selector_config:
                 pattern = selector_config['regex']
-                matches = list(re.finditer(pattern, value))
-                if matches:
-                    value = [match.group() for match in matches]
-                else:
-                    value = []
+                #matches = list(re.finditer(pattern, value))
+                #value = [match.group() for match in matches] - ??? формат строки нужен
+                matches = re.findall(pattern, value)
+                value = matches[0] if matches else ""
             
             processing_ops = {
                 'strip': lambda x: x.strip(),
@@ -136,7 +135,7 @@ class MetadataExtractor:
                 target_attrs={'content', 'href', 'src', 'value', "name"},
                 exclude_tags=self.remove_tags,
                 split_tokens=True,
-                split_token_pattern=r'\w+'
+                split_token_pattern=r'\S+' #'\w+'
             )
             all_tokens, all_xpaths = html_extractor.extract()
             tree = etree.fromstring(html_content, etree.HTMLParser(encoding='utf-8'))
@@ -192,7 +191,7 @@ class MetadataExtractor:
                             raw_value = ''.join(element.itertext()).strip()
                             xpath = html_extractor.get_xpath(element=element)
                         else:
-                            raw_value = element.text.strip() if hasattr(element, 'text') else ''
+                            raw_value = element.text if hasattr(element, 'text') else ''
                             xpath = html_extractor.get_xpath(element=element)
 
                         value = self._process_value(raw_value, selector)
@@ -237,10 +236,9 @@ class MetadataExtractor:
                     continue
 
                 # Обработка regex поверх всего текста
-                if 'regex' in field_config:
+                if 'regex' in field_config["selectors"][0]:
                     combined_text = ' '.join(all_tokens[i] for i in token_indices)
-                    matches = list(re.finditer(field_config['regex'], combined_text))
-                    
+                    matches = list(re.finditer(field_config["selectors"][0]["regex"], combined_text))
                     for match in matches:
                         start, end = match.span()
                         matched_indices = []
@@ -266,7 +264,6 @@ class MetadataExtractor:
                     labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(token_indices) - 1)
                     for i, label in zip(token_indices, labels):
                         node_labels[i] = self.label2id.get(label, 0)
-        
         return node_labels
 
 
