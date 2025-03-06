@@ -3,29 +3,25 @@ remove_tags:           # Удаляемые HTML-теги
   - script
   - style
   - footer
-max_html_length: 10000000 # Макс. длина обрабатываемого HTML
+  - noscript
 
 # Поля для извлечения
 fields:
   title:               # Название поля
-    max_items: 10       # Макс. количество значений
     selectors:         # Последовательность селекторов
       - type: css      # Тип селектора (css/xpath)
         selector: '.title-wrap h1.wi-article-title'  # CSS/XPath выражение
         strategy: first  # Стратегия: first/multi
-        extract: text  # Извлекать: text/attr
+        extract: innerText  # Извлекать: text/attr/innerText
         post_process:  # Постобработка:
           - strip      # Удаление пробелов
           - unescape   # HTML-декодирование
-        # validate:      # Валидация:
-        #   - required   # Обязательное поле
-        #   - max_length: 300  # Макс. длина
-        # bio_scope: element
+        validate:      # Валидация:
+         - required   # Обязательное поле
       - type: xpath
         selector: '//meta[@name="citation_title"]'
         extract: attr
         attr_name: content
-        # bio_scope: element
 
   author:
     selectors:
@@ -37,16 +33,16 @@ fields:
         post_process:
           - strip
           - title
+
       - type: css
-        selector: '.wi-authors .al-authors-list .al-author-name'
+        selector: '.wi-authors .al-authors-list .al-author-name-more .linked-name'
         strategy: multi
-        extract: text
+        extract: innerText
         post_process:
           - strip
           - title
 
   date:
-    max_items: 10
     selectors:
       - type: css
         selector: 'meta[name="citation_publication_date"]'  # Регулярное выражение
@@ -57,7 +53,7 @@ fields:
           - normalize_date  # Нормализация даты
         validate:
           - date
-        # bio_scope: element
+
       - type: css
         selector: '.ww-citation-date-wrap .citation-date'  # Регулярное выражение
         strategy: first
@@ -67,7 +63,6 @@ fields:
           - normalize_date  # Нормализация даты
         validate:
           - date
-        # bio_scope: element
 
   doi:
     selectors:
@@ -93,14 +88,20 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
+        regex: '\d{4}-\d{3}[\dXx]'
       - type: xpath
-        selector: '//div[@class="journal-footer-colophon"]//li[contains(text(), "ISSN")]'
+        selector: '//div[@class="journal-footer-colophon"]//li[contains(text(), "Print ISSN ")]'
         strategy: first
         extract: text
-        post_process:
-          - strip  
+        regex: '\d{4}-\d{3}[\dXx]'
+
+  eissn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="journal-footer-colophon"]//li[contains(text(), "Online ISSN")]'
+        strategy: first
+        extract: text
+        regex: '\d{4}-\d{3}[\dXx]'
 
   journal:
     selectors:
