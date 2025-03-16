@@ -189,7 +189,7 @@ fields:
         post_process:
           - strip
 
-  affilation:
+  affiliation:
     selectors:
       - type: css
         selector: 'meta[name="citation_author_institution"]'

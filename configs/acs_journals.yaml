@@ -1,0 +1,202 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: '.article_header-title .hlFld-Title'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: '.header_contnav .hlFld-Title .hlFld-Title'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  date:
+    selectors:
+      - type: css
+        selector: '.article_header-epubdate .pub-date-value'
+        strategy: multi
+        extract: text
+        regex: '\d{4}'
+      - type: css
+        selector: 'meta[name="dc.Date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        regex: '\d{4}'
+      - type: css
+        selector: '.cit-year-info'
+        strategy: multi
+        extract: text
+        regex: '\d{4}'
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Creator"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+
+      - type: css
+        selector: '.loa .hlFld-ContribAuthor'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="publication_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.article_header-doiurl a'
+        strategy: first
+        extract: attr
+        attr_name: href
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.aJhp_link, .article_header-journal'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: '.NLM_publisher-name'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  volume:
+    selectors:
+      - type: css
+        selector: '.cit-volume'
+        strategy: first
+        extract: text
+        regex: '\d+'
+
+  issue:
+    selectors:
+      - type: css
+        selector: '.cit-issue'
+        strategy: first
+        extract: text
+        regex: '\d+'
+
+  first_page:
+    selectors:
+      - type: css
+        selector: '.cit-pageRange'
+        strategy: first
+        extract: text
+        regex: '(\d+)–\d+'
+
+  last_page:
+    selectors:
+      - type: css
+        selector: '.cit-pageRange'
+        strategy: first
+        extract: text
+        regex: '\d+–(\d+)'
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '.keyword'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#abstractBox'
+        strategy: first
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.loa-info-affiliations-info'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  orcids:
+    selectors:
+      - type: css
+        selector: '.loa-info-orcid'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
