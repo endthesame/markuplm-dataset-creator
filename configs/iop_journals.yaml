@@ -1,0 +1,218 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: '.wd-jnl-art-title'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+        regex: '(\d{4}-\d{2}-\d{2})'
+      - type: css
+        selector: '.wd-jnl-art-pub-date'
+        strategy: first
+        extract: text
+        regex: '\d{4}'
+      - type: css
+        selector: 'meta[name="citation_online_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: 'meta[name="dc.creator"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+        post_process:
+          - strip
+      - type: css
+        selector: 'span[itemprop="author"] span[itemprop="name"]'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#doi'
+        strategy: first
+        extract: text
+      - type: css
+        selector: '[itemprop="isPartOf"]'
+        strategy: first
+        extract: text
+        regex: 'DOI (10\..*)'
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wd-jnl-art-breadcrumb-title span a'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="dc.publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  volume:
+    selectors:
+      - type: css
+        selector: '[itemprop="volumeNumber"] a'
+        strategy: first
+        extract: text
+        regex: 'Volume (\d+)'
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wd-jnl-art-breadcrumb-issue a'
+        strategy: first
+        extract: text
+        regex: 'Number (\d+)'
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '[class*="keyword"][class*="wd-jnl"] p'
+        strategy: first
+        extract: innerText
+        post_process:
+          - strip
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.wd-jnl-art-abstract p'
+        strategy: multi
+        extract: innerText
+        post_process:
+          - strip
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wd-jnl-art-author-affiliations p.mb-05'
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_orcid"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '[itemprop="author"] a[href*="orcid.org"]'
+        strategy: multi
+        extract: attr
+        attr_name: href
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[name="asset_type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
