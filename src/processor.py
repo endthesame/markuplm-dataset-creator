@@ -211,7 +211,7 @@ class MetadataExtractor:
         return metadata, field_xpath_map
 
     def _generate_bio_labels(self, all_tokens, all_xpaths, field_xpath_map):
-        """Генерация BIO-разметки с учётом дочерних элементов"""
+        """Генерация BIO-разметки с учётом всех селекторов и regex"""
         node_labels = [self.label2id.get("O", 0)] * len(all_tokens)
         
         for field_name, xpaths in field_xpath_map.items():
@@ -219,10 +219,7 @@ class MetadataExtractor:
             field_config = self.config['fields'][field_name]
             
             for base_xpath in xpaths:
-                # Нормализация XPath для сравнения
                 base_xpath = base_xpath.rstrip('/')
-                
-                # Находим все токены, чьи XPaths начинаются с базового
                 token_indices = [
                     i for i, xp in enumerate(all_xpaths) 
                     if xp.startswith(base_xpath) and (
@@ -235,11 +232,20 @@ class MetadataExtractor:
                 if not token_indices:
                     continue
 
-                # Обработка regex поверх всего текста
-                if 'regex' in field_config["selectors"][0]:
+                # Флаг для отслеживания совпадений regex
+                regex_matched = False
+                
+                # Цикл по всем селекторам поля
+                for selector in field_config["selectors"]:
+                    if 'regex' not in selector:
+                        continue
+                    
+                    regex_pattern = selector['regex']
                     combined_text = ' '.join(all_tokens[i] for i in token_indices)
-                    matches = list(re.finditer(field_config["selectors"][0]["regex"], combined_text))
+                    matches = list(re.finditer(regex_pattern, combined_text))
+                    
                     for match in matches:
+                        regex_matched = True
                         start, end = match.span()
                         matched_indices = []
                         current_pos = 0
@@ -248,22 +254,28 @@ class MetadataExtractor:
                             token = all_tokens[idx]
                             token_len = len(token)
                             
-                            # Проверяем пересечение границ токена с матчем
                             if (current_pos <= start < current_pos + token_len) or \
                             (current_pos < end <= current_pos + token_len) or \
                             (start <= current_pos and current_pos + token_len <= end):
                                 matched_indices.append(idx)
                                 
-                            current_pos += token_len + 1  # +1 для пробела
+                            current_pos += token_len + 1
                         
                         if matched_indices:
                             labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(matched_indices) - 1)
                             for i, label in zip(matched_indices, labels):
-                                node_labels[i] = self.label2id.get(label, 0)
-                else:
+                                current_label = self.label2id.get(label, 0)
+                                # Обновляем метку только если токен ещё не размечен
+                                if node_labels[i] == self.label2id.get("O", 0):
+                                    node_labels[i] = current_label
+
+                # Обработка случая без regex или дополнительных токенов
+                if not regex_matched:
                     labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(token_indices) - 1)
                     for i, label in zip(token_indices, labels):
-                        node_labels[i] = self.label2id.get(label, 0)
+                        if node_labels[i] == self.label2id.get("O", 0):
+                            node_labels[i] = self.label2id.get(label, 0)
+        
         return node_labels
 
 
