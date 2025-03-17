@@ -76,9 +76,9 @@ fields:
         strategy: first
         extract: text
       - type: css
-        selector: '[itemprop="isPartOf"]'
+        selector: 'p[itemprop="isPartOf"]'
         strategy: first
-        extract: text
+        extract: innerText
         regex: 'DOI (10\..*)'
 
   journal:
@@ -139,7 +139,7 @@ fields:
       - type: css
         selector: '.wd-jnl-art-breadcrumb-issue a'
         strategy: first
-        extract: text
+        extract: innerText
         regex: 'Number (\d+)'
 
   first_page:

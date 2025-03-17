@@ -211,7 +211,7 @@ class MetadataExtractor:
         return metadata, field_xpath_map
 
     def _generate_bio_labels(self, all_tokens, all_xpaths, field_xpath_map):
-        """Генерация BIO-разметки с учётом всех селекторов и regex"""
+        """Генерация BIO-разметки с учётом групп regex и приоритета меток."""
         node_labels = [self.label2id.get("O", 0)] * len(all_tokens)
         
         for field_name, xpaths in field_xpath_map.items():
@@ -232,10 +232,10 @@ class MetadataExtractor:
                 if not token_indices:
                     continue
 
-                # Флаг для отслеживания совпадений regex
-                regex_matched = False
+                # Флаг для проверки применения regex
+                regex_applied = False
                 
-                # Цикл по всем селекторам поля
+                # Обработка всех селекторов поля
                 for selector in field_config["selectors"]:
                     if 'regex' not in selector:
                         continue
@@ -245,32 +245,44 @@ class MetadataExtractor:
                     matches = list(re.finditer(regex_pattern, combined_text))
                     
                     for match in matches:
-                        regex_matched = True
-                        start, end = match.span()
-                        matched_indices = []
-                        current_pos = 0
+                        regex_applied = True
                         
-                        for idx in token_indices:
-                            token = all_tokens[idx]
-                            token_len = len(token)
+                        # Определение групп для обработки
+                        if match.groups():
+                            groups_to_process = range(1, len(match.groups()) + 1)
+                        else:
+                            groups_to_process = [0]
+                        
+                        for group_idx in groups_to_process:
+                            start, end = match.span(group_idx)
+                            matched_indices = []
+                            current_pos = 0
                             
-                            if (current_pos <= start < current_pos + token_len) or \
-                            (current_pos < end <= current_pos + token_len) or \
-                            (start <= current_pos and current_pos + token_len <= end):
-                                matched_indices.append(idx)
+                            # Сопоставление позиций с токенами
+                            for idx in token_indices:
+                                token = all_tokens[idx]
+                                token_len = len(token)
                                 
-                            current_pos += token_len + 1
-                        
-                        if matched_indices:
-                            labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(matched_indices) - 1)
-                            for i, label in zip(matched_indices, labels):
-                                current_label = self.label2id.get(label, 0)
-                                # Обновляем метку только если токен ещё не размечен
-                                if node_labels[i] == self.label2id.get("O", 0):
-                                    node_labels[i] = current_label
+                                # Проверка пересечения токена с группой
+                                token_start = current_pos
+                                token_end = current_pos + token_len
+                                
+                                if (token_start <= start < token_end) or \
+                                (token_start < end <= token_end) or \
+                                (start <= token_start and token_end <= end):
+                                    matched_indices.append(idx)
+                                
+                                current_pos += token_len + 1  # +1 для пробела
+                            
+                            # Присвоение меток только новым токенам
+                            if matched_indices:
+                                labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(matched_indices) - 1)
+                                for i, label in zip(matched_indices, labels):
+                                    if node_labels[i] == self.label2id.get("O", 0):
+                                        node_labels[i] = self.label2id.get(label, 0)
 
-                # Обработка случая без regex или дополнительных токенов
-                if not regex_matched:
+                # Стандартная разметка, если regex не применён
+                if not regex_applied:
                     labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(token_indices) - 1)
                     for i, label in zip(token_indices, labels):
                         if node_labels[i] == self.label2id.get("O", 0):
