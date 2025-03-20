@@ -1,0 +1,151 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.chapter-title'
+        strategy: first
+        extract: text
+        post_process:
+          - strip
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.chapter-publication-date'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-authors .al-author-name .linked-name'
+        strategy: multi
+        extract: text
+      - type: css
+        selector: '.authors .al-author-name .linked-name'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.chapter-doi-link a'
+        strategy: first
+        extract: text
+
+  book_title:
+    selectors:
+      - type: css
+        selector: '.book-info__meta .book-info__title'
+        strategy: first
+        extract: innerText
+
+  eisbn:
+    selectors:
+      # - type: css
+      #   selector: '.book-info__isbn'
+      #   strategy: multi
+      #   extract: innerText
+      #   regex: 'ISBN electronic: (\d+-\d+-\d+-\d+-\d+)'
+      - type: xpath
+        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "ISBN electronic:")]]/div[@class="book-info__isbn-number"]'
+        strategy: multi
+        extract: text
+      - type: xpath
+        selector: '//div[@id="getCitation"]/div[@class="citation-isbn"][span[contains(text(), "ISBN (electronic)")]]'
+        strategy: multi
+        extract: innerText
+        regex: '(\d+-\d+-\d+-\d+-\d+)'
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "Hardback") or contains(text(), "Paperback") or contains(text(), "Print")]]/div[@class="book-info__isbn-number"]'
+        strategy: multi
+        extract: text
+      - type: xpath
+        selector: '//div[@id="getCitation"]/div[@class="citation-isbn"][span[contains(text(), "ISBN (print)")]]'
+        strategy: multi
+        extract: innerText
+        regex: '(\d+-\d+-\d+-\d+-\d+)'
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.book-info__publisher-name'
+        strategy: first
+        extract: text
+      - type: css
+        selector: '#getCitation .citation-publisher'
+        strategy: first
+        extract: innerText
+        regex: 'Publisher: (.*)'
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '.kwd-part'
+        strategy: multi
+        extract: innerText
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: '.chapterTopInfo .chapter-groups'
+        strategy: first
+        extract: text
+
+  editor:
+    selectors:
+      - type: css
+        selector: '.editors .al-author-name .linked-name'
+        strategy: multi
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.abstract'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'div[data-widgetname="ArticleFulltext"] p'
+        strategy: multi
+        extract: innerText

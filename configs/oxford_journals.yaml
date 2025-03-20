@@ -15,9 +15,6 @@ fields:
         extract: innerText  # Извлекать: text/attr/innerText
         post_process:  # Постобработка:
           - strip      # Удаление пробелов
-          - unescape   # HTML-декодирование
-        validate:      # Валидация:
-         - required   # Обязательное поле
       - type: xpath
         selector: '//meta[@name="citation_title"]'
         extract: attr
@@ -32,7 +29,6 @@ fields:
         attr_name: content
         post_process:
           - strip
-          - title
 
       - type: css
         selector: '.wi-authors .al-authors-list .al-author-name-more .linked-name'
@@ -40,7 +36,6 @@ fields:
         extract: innerText
         post_process:
           - strip
-          - title
 
   date:
     selectors:
@@ -48,21 +43,12 @@ fields:
         selector: 'meta[name="citation_publication_date"]'  # Регулярное выражение
         extract: attr
         attr_name: content
-        regex: '(\d{4}-\d{2}-\d{2})'   # Извлечение части
-        post_process:
-          - normalize_date  # Нормализация даты
-        validate:
-          - date
 
       - type: css
         selector: '.ww-citation-date-wrap .citation-date'  # Регулярное выражение
         strategy: first
         extract: text
         regex: '(\d{4})'   # Извлечение части
-        post_process:
-          - normalize_date  # Нормализация даты
-        validate:
-          - date
 
   doi:
     selectors:
@@ -217,7 +203,3 @@ fields:
         attr_name: content
         post_process:
           - strip
-
-# Пользовательские валидаторы
-validators:
-  max_length: '\S{1,120}'  # Регулярное выражение
