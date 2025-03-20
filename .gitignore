@@ -6,6 +6,7 @@ __pycache__/
 
 #env files
 .venv
+.venv_jupyter
 
 #html data
 data
@@ -15,3 +16,4 @@ data
 
 #dev files
 dev_src
+test_datasets
