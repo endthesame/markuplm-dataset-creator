@@ -37,6 +37,16 @@ class MetadataExtractor:
         self.remove_tags = self.config.get('remove_tags', ['script', 'style'])
         self.max_html_length = self.config.get('max_html_length', 10000)
 
+        # Определение ожидаемых полей на основе label_map
+        self.expected_fields = set()
+        for label in self.label_map["label2id"].keys():
+            if label == "O":
+                continue
+            if '-' in label:
+                field = label.split('-', 1)[1].lower()
+                self.expected_fields.add(field)
+        self.expected_fields = sorted(list(self.expected_fields))
+
     def _clean_html(self, html_content):
         """Очистка HTML с сохранением структуры"""
         try:
@@ -142,6 +152,11 @@ class MetadataExtractor:
 
             # Шаг 2: Извлечение метаданных
             metadata, field_xpath_map = self._extract_fields_metadata(tree, html_extractor)
+
+            # Добавление отсутствующих полей с пустыми значениями из label map
+            for field in self.expected_fields:
+                if field not in metadata:
+                    metadata[field] = {"text": [], "xpaths": []}
             
             # Шаг 3: Генерация разметки
             node_labels = self._generate_bio_labels(all_tokens, all_xpaths, field_xpath_map)
@@ -306,7 +321,7 @@ def main(args):
             field: Features({
                 "text": Sequence(Value("string")),
                 "xpaths": Sequence(Value("string"))
-            }) for field in extractor.config['fields']
+            }) for field in extractor.expected_fields #for all possible fields in label map
         }),
         "node_labels": Sequence(Value("int64")),
         "processing_time": Value("string")
@@ -355,8 +370,8 @@ def main(args):
         features=features
     )
     
-    save_path = Path(args.output_dir) / f"{args.resource}_dataset"
-    dataset.to_json('output/test.jsonl', num_proc=args.num_proc)
+    save_path = Path(args.output_dir) / f"{args.resource}_{args.doc_type}"
+    dataset.to_json(f"output/{args.resource}_{args.doc_type}.jsonl", num_proc=args.num_proc)
     dataset.save_to_disk(str(save_path), num_proc=args.num_proc)
     logger.info(f"Dataset saved to {save_path}")
 
