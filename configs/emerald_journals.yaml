@@ -1,0 +1,179 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.container .content-title'
+        strategy: first
+        extract: text
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.intent_journal_publication_date'
+        strategy: first
+        extract: text
+        regex: '(\d{4})'
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Contributor"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#intent_contributors .contrib-search'
+        strategy: multi
+        extract: text
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.intent_doi_link'
+        strategy: first
+        extract: text
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.intent_journal_title'
+        strategy: first
+        extract: innerText
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[scheme="issn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.intent_journal_issn'
+        strategy: first
+        extract: text
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.publisher'
+        strategy: first
+        extract: text
+
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.Citation p'
+        strategy: first
+        extract: innerText
+        regex: 'Vol. (\d+)'
+
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.Citation p'
+        strategy: first
+        extract: innerText
+        regex: 'No. ([0-9|]+),'
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.Citation p'
+        strategy: first
+        extract: innerText
+        regex: 'pp. (\d+)-\d+'
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.Citation p'
+        strategy: first
+        extract: innerText
+        regex: 'pp. \d+-(\d+)'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#keywords_list span.intent_text'
+        strategy: multi
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#abstract .Abstract__block__text p'
+        strategy: multi
+        extract: text
