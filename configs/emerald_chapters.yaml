@@ -29,6 +29,7 @@ fields:
         selector: '.intent_journal_publication_date'
         strategy: first
         extract: text
+        regex: 'Publication date: (.*)'
 
   author:
     selectors:
@@ -38,7 +39,7 @@ fields:
         extract: attr
         attr_name: content
       - type: css
-        selector: '#intent_contributors .contrib-search'
+        selector: '#intent_contributors .contrib-search-book-part-meta'
         strategy: multi
         extract: innerText
 
@@ -54,17 +55,36 @@ fields:
         strategy: first
         extract: text
 
-  journal:
+  book_title:
     selectors:
       - type: css
-        selector: 'meta[name="citation_journal_title"]'
+        selector: 'meta[name="citation_inbook_title"]'
         strategy: first
         extract: attr
         attr_name: content
       - type: css
-        selector: '.intent_journal_title'
+        selector: '.intent_book_title'
         strategy: first
         extract: innerText
+
+  isbn:
+    selectors:
+      - type: css
+        selector: '.intent_book_p_isbn'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[scheme="isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  eisbn:
+    selectors:
+      - type: css
+        selector: '.intent_book_e_isbn'
+        strategy: first
+        extract: text
 
   issn:
     selectors:
