@@ -151,7 +151,7 @@ class MetadataExtractor:
             tree = etree.fromstring(html_content, etree.HTMLParser(encoding='utf-8'))
 
             # Шаг 2: Извлечение метаданных
-            metadata, field_xpath_map = self._extract_fields_metadata(tree, html_extractor)
+            metadata, list_of_node_maps_data = self._extract_fields_metadata(tree, html_extractor)
 
             # Добавление отсутствующих полей с пустыми значениями из label map
             for field in self.expected_fields:
@@ -159,7 +159,7 @@ class MetadataExtractor:
                     metadata[field] = {"text": [], "xpaths": []}
             
             # Шаг 3: Генерация разметки
-            node_labels = self._generate_bio_labels(all_tokens, all_xpaths, field_xpath_map)
+            node_labels = self._generate_bio_labels(all_tokens, all_xpaths, list_of_node_maps_data)
             
             return {
                 "tokens": all_tokens,
@@ -176,13 +176,16 @@ class MetadataExtractor:
     def _extract_fields_metadata(self, tree, html_extractor):
         """Извлечение метаданных для всех полей конфигурации"""
         metadata = {}
-        field_xpath_map = {}
+        list_of_node_maps_data = [] #used as a list for node labeling
 
         for field_name, field_config in self.config['fields'].items():
+            node_maps = {"field_name": field_name, "data": []}
+            
             field_data = {"text": [], "xpaths": []}
             collected_xpaths = set()
 
             for selector in field_config['selectors']:
+                selectors_xpath_map = {"selector": selector, "xpaths": []}
                 try:
                     # Выбор элементов
                     elements = []
@@ -190,7 +193,7 @@ class MetadataExtractor:
                         elements = tree.cssselect(selector['selector'])
                     elif selector['type'] == 'xpath':
                         elements = tree.xpath(selector['selector'])
-
+                    
                     # Стратегия выбора
                     if selector.get('strategy', 'first').lower() == 'first':
                         elements = elements[:1]
@@ -217,91 +220,88 @@ class MetadataExtractor:
                             field_data["xpaths"].append(xpath)
                             collected_xpaths.add(xpath)
 
+                            selectors_xpath_map["xpaths"].append(xpath)
+
+                    node_maps["data"].append(selectors_xpath_map)
+
                 except Exception as e:
                     logger.error(f"Error processing selector {selector}: {str(e)}")
 
             metadata[field_name] = field_data
-            field_xpath_map[field_name] = field_data["xpaths"]
-        
-        return metadata, field_xpath_map
+            list_of_node_maps_data.append(node_maps)
+        return metadata, list_of_node_maps_data
 
-    def _generate_bio_labels(self, all_tokens, all_xpaths, field_xpath_map):
-        """Генерация BIO-разметки с учётом групп regex и приоритета меток."""
+    def _generate_bio_labels(self, all_tokens, all_xpaths, list_of_node_maps_data):
+        """Генерация BIO-меток с улучшенной обработкой regex и фильтрацией токенов."""
         node_labels = [self.label2id.get("O", 0)] * len(all_tokens)
-        
-        for field_name, xpaths in field_xpath_map.items():
+
+        for record in list_of_node_maps_data:
+            field_name = record["field_name"]  # Достаём название поля
+            data = record["data"]  # Достаём список селекторов
+
             bio_field = field_name.upper()
-            field_config = self.config['fields'][field_name]
-            
-            for base_xpath in xpaths:
-                base_xpath = base_xpath.rstrip('/')
-                token_indices = [
-                    i for i, xp in enumerate(all_xpaths) 
-                    if xp.startswith(base_xpath) and (
-                        xp == base_xpath or 
-                        xp.startswith(f"{base_xpath}/") or 
-                        xp.startswith(f"{base_xpath}[")
-                    )
-                ]
-                
-                if not token_indices:
-                    continue
 
-                # Флаг для проверки применения regex
-                regex_applied = False
-                
-                # Обработка всех селекторов поля
-                for selector in field_config["selectors"]:
-                    if 'regex' not in selector:
+            for selector in data:
+                extract_type = selector.get("selector", {}).get("extract", "text")
+                is_inner_text = extract_type == "innerText"
+
+                for base_xpath in selector.get("xpaths", []):
+                    base_xpath = base_xpath.rstrip("/")
+                        
+                    # Фильтрация токенов: исключаем атрибуты для innerText
+                    token_indices = [
+                        i for i, xp in enumerate(all_xpaths)
+                        if xp.startswith(base_xpath) and (
+                            xp == base_xpath or 
+                            xp.startswith(f"{base_xpath}/") or 
+                            xp.startswith(f"{base_xpath}[")
+                        )
+                        and (not (is_inner_text and '/@' in xp))
+                    ]
+                    
+                    if not token_indices:
                         continue
-                    
-                    regex_pattern = selector['regex']
-                    combined_text = ' '.join(all_tokens[i] for i in token_indices)
-                    matches = list(re.finditer(regex_pattern, combined_text))
-                    
-                    for match in matches:
-                        regex_applied = True
-                        
-                        # Определение групп для обработки
-                        if match.groups():
-                            groups_to_process = range(1, len(match.groups()) + 1)
-                        else:
-                            groups_to_process = [0]
-                        
-                        for group_idx in groups_to_process:
-                            start, end = match.span(group_idx)
-                            matched_indices = []
-                            current_pos = 0
-                            
-                            # Сопоставление позиций с токенами
-                            for idx in token_indices:
-                                token = all_tokens[idx]
-                                token_len = len(token)
-                                
-                                # Проверка пересечения токена с группой
-                                token_start = current_pos
-                                token_end = current_pos + token_len
-                                
-                                if (token_start <= start < token_end) or \
-                                (token_start < end <= token_end) or \
-                                (start <= token_start and token_end <= end):
-                                    matched_indices.append(idx)
-                                
-                                current_pos += token_len + 1  # +1 для пробела
-                            
-                            # Присвоение меток только новым токенам
-                            if matched_indices:
-                                labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(matched_indices) - 1)
-                                for i, label in zip(matched_indices, labels):
-                                    if node_labels[i] == self.label2id.get("O", 0):
-                                        node_labels[i] = self.label2id.get(label, 0)
 
-                # Стандартная разметка, если regex не применён
-                if not regex_applied:
-                    labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(token_indices) - 1)
-                    for i, label in zip(token_indices, labels):
-                        if node_labels[i] == self.label2id.get("O", 0):
-                            node_labels[i] = self.label2id.get(label, 0)
+                    # Обработка regex
+                    if 'regex' in selector.get('selector'):
+                        combined_text = ' '.join(all_tokens[i] for i in token_indices)
+                        matches = list(re.finditer(selector.get('selector')['regex'], combined_text))
+                        
+                        for match in matches:
+                            # Определяем группы для обработки
+                            groups = [0] if not match.groups() else range(1, len(match.groups()) + 1)
+                            
+                            for group_idx in groups:
+                                start, end = match.span(group_idx)
+                                matched_indices = []
+                                current_pos = 0
+                                
+                                # Сопоставляем позиции в combined_text с токенами
+                                for idx in token_indices:
+                                    token = all_tokens[idx]
+                                    token_len = len(token)
+                                    token_end = current_pos + token_len
+                                    
+                                    if (current_pos <= start < token_end) or \
+                                    (current_pos < end <= token_end) or \
+                                    (start <= current_pos and token_end <= end):
+                                        matched_indices.append(idx)
+                                    
+                                    current_pos += token_len + 1  # Учет пробелов
+                                
+                                # Назначаем метки
+                                if matched_indices:
+                                    labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(matched_indices) - 1)
+                                    for i, label in zip(matched_indices, labels):
+                                        if node_labels[i] == self.label2id.get("O", 0):
+                                            node_labels[i] = self.label2id.get(label, 0)
+
+                    # Стандартная разметка, если regex не сработал
+                    else:
+                        labels = [f"B-{bio_field}"] + [f"I-{bio_field}"] * (len(token_indices) - 1)
+                        for i, label in zip(token_indices, labels):
+                            if node_labels[i] == self.label2id.get("O", 0):
+                                node_labels[i] = self.label2id.get(label, 0)
         
         return node_labels
 
