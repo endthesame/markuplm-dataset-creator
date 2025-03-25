@@ -1,0 +1,100 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  date:
+    selectors:
+      - type: css
+        selector: '.intent_book_publication_date'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: '.intent_book_author'
+        strategy: multi
+        extract: innerText
+
+  editor:
+    selectors:
+      - type: css
+        selector: '.intent_book_editor'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'DOI')]]/following-sibling::dd[contains(@class, 'small')][1]"
+        strategy: first
+        extract: text
+
+  title:
+    selectors:
+      - type: css
+        selector: '.intent_book_title'
+        strategy: first
+        extract: innerText
+
+  subtitle:
+    selectors:
+      - type: css
+        selector: '.intent_book_subtitle'
+        strategy: first
+        extract: innerText
+
+  book_series:
+    selectors:
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'Book series')]]/following-sibling::dd[contains(@class, 'small')]/a"
+        strategy: first
+        extract: text
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'ISBN')]]/following-sibling::dd[contains(@class, 'small')][1]"
+        strategy: first
+        extract: text
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'eISBN')]]/following-sibling::dd[contains(@class, 'small')][1]"
+        strategy: first
+        extract: text
+
+  issn:
+    selectors:
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'ISSN')]]/following-sibling::dd[contains(@class, 'small')][1]"
+        strategy: first
+        extract: text
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//dt[contains(@class, 'h3') and text()[contains(., 'Series copyright holder')]]/following-sibling::dd[contains(@class, 'small')][1]"
+        strategy: first
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: 'p.intent_book_synopsis div p'
+        strategy: multi
+        extract: innerText
+      - type: xpath
+        selector: "//p[contains(@class, 'intent_book_synopsis')]/following-sibling::div/p[1]"
+        strategy: multi
+        extract: innerText
