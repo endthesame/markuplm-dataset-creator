@@ -243,7 +243,7 @@ class MetadataExtractor:
 
             for selector in data:
                 extract_type = selector.get("selector", {}).get("extract", "text")
-                is_inner_text = extract_type == "innerText"
+                is_attr = extract_type == "attr"
 
                 for base_xpath in selector.get("xpaths", []):
                     base_xpath = base_xpath.rstrip("/")
@@ -256,7 +256,7 @@ class MetadataExtractor:
                             xp.startswith(f"{base_xpath}/") or 
                             xp.startswith(f"{base_xpath}[")
                         )
-                        and (not (is_inner_text and '/@' in xp))
+                        and (not (not is_attr and '/@' in xp))
                     ]
                     
                     if not token_indices:
