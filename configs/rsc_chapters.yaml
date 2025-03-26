@@ -1,0 +1,152 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.chapter-title'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  book_title:
+    selectors:
+      - type: css
+        selector: '.book-info__title'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.chapter-publication-date'
+        strategy: multi
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-authors .al-author-name .linked-name'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.chapter-doi-link'
+        strategy: first
+        extract: text
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "Hardback") or contains(text(), "Paperback") or contains(text(), "Print ISBN") or contains(text(), "EPUB")]]/div[@class="book-info__isbn-number"]'
+        strategy: multi
+        extract: text
+      - type: css
+        selector: 'meta[name="citation_isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "ISBN electronic:") or contains(text(), "PDF ISBN")]]/div[@class="book-info__isbn-number"]'
+        strategy: multi
+        extract: text
+
+  issn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "Print ISSN:")]]/div[@class="book-info__isbn-number"]'
+        strategy: multi
+        extract: text
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  first_page:
+    selectors:
+      - type: css
+        selector: '.chapter-pagerange-value'
+        strategy: first
+        extract: text
+        regex: '(\d+)\s?+-\s?+\d+'
+
+  last_page:
+    selectors:
+      - type: css
+        selector: '.chapter-pagerange-value'
+        strategy: first
+        extract: text
+        regex: '\d+\s?+-\s?+(\d+)'
+  
+  pages:
+    selectors:
+      - type: css
+        selector: '#getCitation p'
+        strategy: first
+        extract: text
+        regex: 'pp.\s?+(\d+-\d+)'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.abstract'
+        strategy: first
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.wi-authors .info-card-affilitation .aff'
+        strategy: multi
+        extract: innerText
