@@ -1,0 +1,146 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.titre-numero'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_year"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DCSext.annee_tomaison"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//li[contains(@class, 'meta') and contains(text(), 'Year')]"
+        strategy: first
+        extract: innerText
+        regex: '(\d{4})'
+
+  author:
+    selectors:
+      - type: css
+        selector: '#numero .auteurs .auteur'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="DCSext.authors"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  subtitle:
+    selectors:
+      - type: css
+        selector: '.sous-titre-numero'
+        strategy: first
+        extract: text
+
+  isbn:
+    selectors:
+      - type: css
+        selector: '#article-details'
+        strategy: first
+        extract: innerText
+        regex: 'ISBN ([0-9-]+)'
+      - type: css
+        selector: 'meta[name="citation_isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  eisbn:
+    selectors:
+      - type: css
+        selector: '#article-details'
+        strategy: first
+        extract: innerText
+        regex: 'ISBN digital ([0-9-]+)'
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DCSext.editeur"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//li[contains(@class, 'meta') and contains(text(), 'Publisher')]"
+        strategy: multi
+        extract: innerText
+        regex: 'Publisher\s?+:\s?+(.*)'
+
+  pages:
+    selectors:
+      - type: xpath
+        selector: "//li[contains(@class, 'meta') and contains(text(), 'Pages')]"
+        strategy: multi
+        extract: innerText
+        regex: '(\d+)'
+      - type: css
+        selector: 'meta[name="DCSext.doc_nb_pages"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#article-texte'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="twitter:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
