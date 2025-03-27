@@ -127,7 +127,7 @@ fields:
         selector: '#getCitation p'
         strategy: first
         extract: text
-        regex: 'pp.\s?+(\d+-\d+)'
+        regex: 'pp.\s?+(\d+-\d+.?)'
 
   doc_type:
     selectors:

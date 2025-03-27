@@ -31,7 +31,7 @@ fields:
         extract: attr
         attr_name: content
       - type: css
-        selector: '.chapter-publication-date'
+        selector: '.book-info__publication-date'
         strategy: multi
         extract: text
 
@@ -117,11 +117,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-      - type: css
-        selector: 'meta[name="dc.Publisher"]'
-        strategy: first
-        extract: attr
-        attr_name: content
 
   volume:
     selectors:
@@ -130,21 +125,12 @@ fields:
         strategy: first
         extract: text
 
-  first_page:
+  pages:
     selectors:
       - type: css
-        selector: '#getCitation, .chapter-pagerange-value'
+        selector: '.book-info__pagecount-number'
         strategy: first
         extract: text
-        regex: '(?:pp\.|(\d+))[\s-]+(\d+)'
-
-  last_page:
-    selectors:
-      - type: css
-        selector: '#getCitation, .chapter-pagerange-value'
-        strategy: first
-        extract: text
-        regex: '(?:pp\.|\d+[\s-]+)(\d+)'
 
   doc_type:
     selectors:

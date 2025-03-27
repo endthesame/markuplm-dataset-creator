@@ -1,0 +1,206 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.article__title .capsule__title'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DC.title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  journal:
+    selectors:
+      - type: css
+        selector: '.article-nav h3.h--heading3'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_journal_abbrev"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_online_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DC.issued"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: '//div[@id="divAbout"]//dl[contains(@class, "definition-list")]//div[contains(@class, "c")][.//dt[contains(., "published")]]//dd[contains(@class, "c__14")]'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DC.Creator"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.article__authors .article__author-link a'
+        strategy: multi
+        extract: text
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DC.Identifier"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.definition-list .doi-link a'
+        strategy: first
+        extract: text
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="DC.publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+  
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="DC.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content        
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: '//div[@id="divAbout"]//dl[contains(@class, "definition-list")]//div[contains(@class, "c")][.//dt/strong[contains(., "Article type")]]//dd[contains(@class, "c__14")]'
+        strategy: first
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: 'div.capsule__text p'
+        strategy: multi
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+  
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.orcid a'
+        strategy: multi
+        extract: attr
+        attr_name: href
