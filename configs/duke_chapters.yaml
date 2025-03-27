@@ -22,8 +22,6 @@ fields:
         selector: '.chapter-title'
         strategy: first
         extract: text
-        post_process:
-          - strip
 
   date:
     selectors:
