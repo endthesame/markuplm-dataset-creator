@@ -1,0 +1,171 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: xpath
+        selector: '//meta[@name="citation_title"]'
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: '//meta[@property="og:title"]'
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.title-container h1'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.title-container-mobile .title-holder h1'
+        strategy: first
+        extract: innerText
+
+  subtitle:
+    selectors:
+      - type: css
+        selector: '.title-container h2'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.title-container-mobile .title-holder h2'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.book-edition-year'
+        strategy: multi
+        extract: innerText
+        regex: '\d{4}'
+      - type: xpath
+        selector: "//div[contains(@class, 'kf-detail-item')][h3[normalize-space()='Published']]//p[contains(@class, 'text-s')]"
+        strategy: first
+        extract: innerText
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.simple-authors h3'
+        strategy: multi
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class, 'title-container-mobile')]//div[contains(@class, 'author-list')]//p[preceding-sibling::p[1][contains(., 'Author')]]"
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class, 'cover-tablet-desktop ')]//div[contains(@class, 'author-list')]//p[preceding-sibling::p[1][contains(., 'Author')]]"
+        strategy: first
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//div[contains(@class, 'kf-detail-item')][h3[normalize-space()='DOI']]//p[contains(@class, 'text-s')]"
+        strategy: first
+        extract: innerText
+
+  isbn:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:book:isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//div[contains(@class, 'kf-detail-item')][h3[normalize-space()='ISBN']]//p[contains(@class, 'text-s')]"
+        strategy: first
+        extract: innerText
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//div[contains(@class, 'kf-detail-item')][h3[normalize-space()='Imprint']]//p[contains(@class, 'text-s')]"
+        strategy: first
+        extract: innerText
+
+  book_version:
+    selectors:
+      - type: css
+        selector: '.book-edition-year'
+        strategy: multi
+        extract: innerText
+        regex: '• (.* Edition)'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.book-edition-year strong'
+        strategy: multi
+        extract: innerText
+
+  language:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'kf-detail-item')][h3[normalize-space()='Language']]//p[contains(@class, 'text-s')]"
+        strategy: first
+        extract: innerText
+
+  editor:
+    selectors:
+      - type: css
+        selector: '.editors-container h3'
+        strategy: multi
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class, 'title-container-mobile')]//div[contains(@class, 'author-list')]//p[preceding-sibling::p[1][contains(., 'Edited')]]"
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class, 'cover-tablet-desktop ')]//div[contains(@class, 'author-list')]//p[preceding-sibling::p[1][contains(., 'Edited')]]"
+        strategy: first
+        extract: innerText
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#book-description .text-s p'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.simple-authors .u-margin-l-bottom .text-s'
+        strategy: multi
+        extract: innerText
