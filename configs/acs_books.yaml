@@ -23,7 +23,7 @@ fields:
       - type: xpath
         selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="Publication Date:"]]/div[2]'
         strategy: first
-        extract: text
+        extract: innerText
 
   author:
     selectors:
@@ -51,7 +51,7 @@ fields:
       - type: xpath
         selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="DOI:"]]/div[2]'
         strategy: first
-        extract: text
+        extract: innerText
       - type: css
         selector: 'meta[name="publication_doi"]'
         strategy: first
@@ -68,21 +68,21 @@ fields:
       - type: xpath
         selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="ISBN:"]]/div[2]'
         strategy: first
-        extract: text
+        extract: innerText
 
   eisbn:
     selectors:
       - type: xpath
         selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="eISBN:"]]/div[2]'
         strategy: first
-        extract: text
+        extract: innerText
 
   publisher:
     selectors:
       - type: xpath
         selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="Publisher:"]]/div[2]'
         strategy: first
-        extract: text
+        extract: innerText
 
   abstract:
     selectors:
@@ -90,3 +90,11 @@ fields:
         selector: '.book-abstract p'
         strategy: multi
         extract: innerText
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content

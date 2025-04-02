@@ -13,27 +13,19 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.article_header-title .hlFld-Title'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
       - type: css
         selector: 'meta[property="og:title"]'
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.header_contnav .hlFld-Title .hlFld-Title'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   date:
     selectors:
@@ -61,15 +53,11 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
       - type: css
         selector: '.loa .hlFld-ContribAuthor'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   doi:
     selectors:
@@ -100,8 +88,6 @@ fields:
         selector: '.aJhp_link, .article_header-journal'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   publisher:
     selectors:
@@ -116,8 +102,6 @@ fields:
         selector: '.NLM_publisher-name'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   volume:
     selectors:
@@ -165,8 +149,6 @@ fields:
         selector: '.keyword'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   abstract:
     selectors:
@@ -181,17 +163,13 @@ fields:
         selector: '.loa-info-affiliations-info'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
-  orcids:
+  orcid:
     selectors:
       - type: css
         selector: '.loa-info-orcid'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   doc_type:
     selectors:

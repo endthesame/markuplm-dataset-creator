@@ -1,0 +1,156 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.hlFld-Title'
+        strategy: multi
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: '.article_header-epubdate .pub-date-value'
+        strategy: first
+        extract: innerText
+
+  author:
+    selectors:
+      - type: css
+        selector: '.hlFld-ContribAuthor'
+        strategy: multi
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.loa-info-affiliations-info'
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.loa-info-orcid'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="publication_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.article_header-doiurl'
+        strategy: first
+        extract: text
+
+  book_title:
+    selectors:
+      - type: css
+        selector: '.article_header-book-title'
+        strategy: first
+        extract: innerText
+
+  book_series:
+    selectors:
+      - type: css
+        selector: '.article_header-book-series-title span'
+        strategy: first
+        extract: text
+
+  volume:
+    selectors:
+      - type: css
+        selector: '.article_header-book-series-title'
+        strategy: first
+        extract: innerText
+        regex: 'Vol.\s+?(\d+)'
+
+  isbn:
+    selectors:
+      - type: css
+        selector: '.article_header-book-isbn'
+        strategy: first
+        extract: innerText
+        regex: 'ISBN13: ([0-9-]+)'
+
+  eisbn:
+    selectors:
+      - type: css
+        selector: '.article_header-book-isbn'
+        strategy: first
+        extract: innerText
+        regex: 'eISBN: ([0-9-]+)'
+
+  publisher:
+    selectors:
+      - type: css
+        selector: '.NLM_publisher-name'
+        strategy: first
+        extract: innerText
+
+  pages:
+    selectors:
+      - type: css
+        selector: '.pageRange'
+        strategy: first
+        extract: text
+        regex: 'pp (.*)'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: '.chapter-number'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '.keyword'
+        strategy: multi
+        extract: innerText
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#abstractBox p'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
