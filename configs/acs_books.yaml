@@ -1,0 +1,92 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.book-toc-header_text .hlFld-Title'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="Publication Date:"]]/div[2]'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: '.author-name'
+        strategy: multi
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.loa-info-affiliations-info'
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.loa-info-orcid a'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="DOI:"]]/div[2]'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[name="publication_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="ISBN:"]]/div[2]'
+        strategy: first
+        extract: text
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="eISBN:"]]/div[2]'
+        strategy: first
+        extract: text
+
+  publisher:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="book-toc-infocus-header_text"]//div[contains(@class, "flex-infocus")][div[@class="titles"]/strong[text()="Publisher:"]]/div[2]'
+        strategy: first
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.book-abstract p'
+        strategy: multi
+        extract: innerText
