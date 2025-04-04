@@ -173,6 +173,6 @@ fields:
   affiliation:
     selectors:
       - type: css
-        selector: '.book-info__authors .authors .al-author-name .info-card-author .aff'
+        selector: '.book-info__authors .info-card-affilitation .aff'
         strategy: multi
         extract: innerText
