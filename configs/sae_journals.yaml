@@ -1,0 +1,180 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.si-title'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_date"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-masthead__b__item.si-published'
+        strategy: first
+        extract: text
+      - type: xpath
+        selector: "//dl[dt/div[contains(text(),'Published')]]/dd/span"
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'a[data-analytics="item-detail-author-card-author-btn"]'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-data__set a[href*="doi.org"]'
+        strategy: first
+        extract: text
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_language"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//dl[dt/div[contains(text(),'Language')]]/dd/span"
+        strategy: first
+        extract: text
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-data__set .si-dataout__c [arialabel="Publisher"]'
+        strategy: first
+        extract: innerText
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#mat-chip-list-1'
+        strategy: first
+        extract: innerText
+
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-card .si-component'
+        strategy: first
+        extract: text
+        regex: 'Volume (\d+,?)'
+
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-card .si-component'
+        strategy: first
+        extract: text
+        regex: 'Issue (\d+)'
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#cdk-accordion-child-1 .si-dataout__c'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="description"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: '.si-authors .mat-card-header-text [data-analytics="item-detail-author-card-affiliation-btn"]'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.si-chiplist[aria-label="Affiliated or Co-Author"] [data-analytics="item-detail-affiliation-chip"] .ng-star-inserted'
+        strategy: multi
+        extract: innerText
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  doc_type:
+    selectors:
+      - type: xpath
+        selector: "//dl[dt/div[contains(text(),'Type')]]/dd/span"
+        strategy: first
+        extract: text
