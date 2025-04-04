@@ -1,0 +1,113 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.item-meta .left-bordered-title span'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'p.meta__date'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.item-meta .left-bordered-title span.date'
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class,'published-info')]//div[span[@class='bold' and normalize-space(text())='Published:']]/span[@class='space']"
+        strategy: multi
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class,'item-meta-row__label')][strong[normalize-space(text())='Published:']]/following-sibling::div[contains(@class,'item-meta-row__value')]"
+        strategy: multi
+        extract: innerText
+
+  author:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'item-meta__info')]//ul[contains(@class, 'loa')][li[@class='label' and contains(., 'Author')]]//a/span"
+        strategy: multi
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class, 'item-meta__info')]//ul[contains(@class, 'loa')][li[@class='label' and contains(., 'Chair')]]//a/span"
+        strategy: multi
+        extract: innerText
+
+  editor:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'item-meta__info')]//ul[contains(@class, 'loa')][li[@class='label' and contains(., 'Editor')]]//a/span"
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="publication_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class,'published-info')]//div[span[@class='bold' and normalize-space(text())='ISBN:']]/span[@class='space']"
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: "//div[contains(@class,'item-meta-row__label')][strong[normalize-space(text())='ISBN:']]/following-sibling::div[contains(@class,'item-meta-row__value')]"
+        strategy: first
+        extract: innerText
+
+  publisher:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class,'item-meta-row__label')][strong[normalize-space(text())='Publisher:']]/following-sibling::div//ul[contains(@class,'rlist--inline')]/li"
+        strategy: multi
+        extract: innerText
+
+  abstract:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'abstractSection') and p[normalize-space(.) != 'No abstract available.']]"
+        strategy: first
+        extract: innerText
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  conference_title:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class,'item-meta-row__label')]   [strong[normalize-space(text())='Conference:']    and //nav[contains(@aria-label, 'Breadcrumbs')]          //li[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'conferences')]   ] /following-sibling::div[contains(@class,'item-meta-row__value')]//span"
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.conference-landing .col-sm-6 p.banner__text'
+        strategy: first
+        extract: innerText

@@ -1,0 +1,217 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.core-container h1[property="name"]'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[name="dc.Title"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  subtitle:
+    selectors:
+      - type: css
+        selector: '.core-container h1[property="name"] .subtitle'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'meta[name="dc.Title.Subtitle"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.CitationCoverDate, .core-date-published, .cover-date'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'core-date-published'
+        strategy: first
+        extract: 
+
+  author:
+    selectors:
+      - type: css
+        selector: '.loa__author-name span'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: '.authors span[property="author"] div[property="name"]'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: '.authors span[property="author"] a span'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="dc.Creator"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.affiliations div[property="affiliation"]'
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="publication_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.core-self-citation .doi'
+        strategy: first
+        extract: innerText
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.epub-section__title'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.journal-meta .serial-title'
+        strategy: first
+        extract: innerText
+
+  issn:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'cover-image__details-extra')]   //div[contains(@class, 'flex-container')]     [span[normalize-space(.) = 'ISSN:']]   /span[@class='space']"
+        strategy: first
+        extract: text
+
+  eissn:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'cover-image__details-extra')]   //div[contains(@class, 'flex-container')]     [span[normalize-space(.) = 'EISSN:']]   /span[@class='space']"
+        strategy: first
+        extract: text
+
+  publisher:
+    selectors:
+      - type: css
+        selector: '.publisher__name'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  volume:
+    selectors:
+      - type: css
+        selector: '.issue-item__detail, .journal-meta .serial-info'
+        strategy: first
+        extract: text
+        regex: 'Volume\s?+(\d+,?)'
+      - type: css
+        selector: 'span[property="volumeNumber"]'
+        strategy: multi
+        extract: innerText
+
+  issue:
+    selectors:
+      - type: css
+        selector: '.issue-item__detail, .journal-meta .serial-info'
+        strategy: first
+        extract: text
+        regex: 'Issue\s?+(\d+)'
+      - type: css
+        selector: 'span[property="issueNumber"]'
+        strategy: multi
+        extract: innerText
+
+  first_page:
+    selectors:
+      - type: css
+        selector: '.issue-item__detail'
+        strategy: first
+        extract: text
+        regex: 'pp (\d+)–\d+'
+      - type: css
+        selector: '[property="pageStart"]'
+        strategy: first
+        extract: innerText
+
+  last_page:
+    selectors:
+      - type: css
+        selector: '.issue-item__detail'
+        strategy: first
+        extract: text
+        regex: 'pp \d+–(\d+)'
+      - type: css
+        selector: '[property="pageEnd"]'
+        strategy: first
+        extract: innerText
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.abstractSection, #abstract div'
+        strategy: multi
+        extract: innerText
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
