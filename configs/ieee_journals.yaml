@@ -1,0 +1,157 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.document-title'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="parsely-title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: '.row.g-0.u-pt-1 .doc-abstract-pubdate'
+        strategy: first
+        extract: innerText
+        regex: 'Date of Publication:\s?+(.*)'
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="parsely-author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.authors-info span a span'
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.authors-info span a[href*="orcid.org"]'
+        strategy: multi
+        extract: attr
+        attr_name: href
+
+  doi:
+    selectors:
+      - type: css
+        selector: '.stats-document-abstract-doi a'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.stats-document-abstract-doi a'
+        strategy: first
+        extract: attr
+        attr_name: href
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'a.stats-document-abstract-publishedIn'
+        strategy: first
+        extract: innerText
+
+  volume:
+    selectors:
+      - type: xpath
+        selector: '//div[contains(@class, "stats-document-abstract-publishedIn")]//span[contains(text(), "Volume")]'
+        strategy: first
+        extract: text
+        regex: 'Volume: (\d+)'
+
+  issue:
+    selectors:
+      - type: css
+        selector: '.stats-document-abstract-publishedIn-issue'
+        strategy: first
+        extract: innerText
+        regex: 'Issue: (\d+)'
+
+  issn:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Print ISSN")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Print ISSN:\s*(.*)'
+
+  eissn:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Online ISSN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISSN:\s*(.*)'
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Electronic ISSN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISSN:\s*(.*)'
+      - type: xpath
+        selector: '//div[strong[contains(text(), "CD ISSN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISSN:\s*(.*)'
+
+  publisher:
+    selectors:
+      - type: xpath
+        selector: '//div[contains(@class, "doc-abstract-publisher")]//*[contains(@class, "title")]/following-sibling::*[1]'
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: '//div[contains(@class, "publisher-title-tooltip")]//*[contains(@class, "title")]/following-sibling::*[1]'
+        strategy: first
+        extract: innerText
+
+  first_page:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Page")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Page\(s\):\s*(\d+)\s*-\s*\d+'
+
+  last_page:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Page")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Page\(s\):\s*\d+\s*-\s*(\d+)'
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.document-abstract .abstract-text'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="twitter:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content

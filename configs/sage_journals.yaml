@@ -1,0 +1,203 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.core-container h1[property="name"]'
+        strategy: first
+        extract: text
+      
+  subtitle:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Title.Subtitle"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.core-container h1[property="name"] .subtitle'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="dc.Date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.meta-panel__onlineDate'
+        strategy: first
+        extract: innerText
+        regex: 'First published(?: online)? ([A-Z][a-z]+.*)'
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Creator"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//span[contains(@class, 'authors')]//span[@property='author']//span[@property='givenName' or @property='familyName']"
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.authors [property="author"] a.orcid-id'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: '.authors [property="author"] a.orcid-id'
+        strategy: multi
+        extract: attr
+        attr_name: href
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Identifier"][scheme="doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.core-container .doi a'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.core-container .doi a'
+        strategy: first
+        extract: attr
+        attr_name: href
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.journal-title'
+        strategy: first
+        extract: innerText
+
+  issn:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'footer__nav')]//ul[contains(@class, 'rlist')]//li[span[contains(text(), 'ISSN:') and not(contains(text(), 'Online'))]]/span"
+        strategy: first
+        extract: text
+        regex: 'ISSN:\s*(.*)'
+
+  eissn:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'footer__nav')]//ul[contains(@class, 'rlist')]//li[span[contains(text(), 'Online ISSN')]]/span"
+        strategy: first
+        extract: text
+        regex: 'Online ISSN:\s*(.*)'
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  volume:
+    selectors:
+      - type: css
+        selector: '[property="volumeNumber"]'
+        strategy: multi
+        extract: innerText
+
+  issue:
+    selectors:
+      - type: css
+        selector: '[property="issueNumber"]'
+        strategy: multi
+        extract: innerText
+
+  first_page:
+    selectors:
+      - type: css
+        selector: '[property="pageStart"]'
+        strategy: first
+        extract: innerText
+
+  last_page:
+    selectors:
+      - type: css
+        selector: '[property="pageEnd"]'
+        strategy: first
+        extract: innerText
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="dc.Language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '[property="keywords"] li'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#abstract'
+        strategy: first
+        extract: innerText
+        regex: '^(?:Abstract\s+)?(.*)'
+      - type: css
+        selector: 'meta[name="dc.Description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="Description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: '.meta-panel__type'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content

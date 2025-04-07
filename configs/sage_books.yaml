@@ -1,0 +1,163 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.book-info-holder .text-holder h1'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_online_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Publication year')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Publication year:\s*(.*)'
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Online pub date')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Online pub date:\s*(.*)'
+
+  author:
+    selectors:
+      - type: xpath
+        selector: "//li[strong[contains(., 'By:')]]//a[contains(@class, 'bioIDLink')]"
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  editor:
+    selectors:
+      - type: xpath
+        selector: "//li[strong[contains(., 'Edited')]]//a[contains(@class, 'bioIDLink')]"
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'DOI')]]"
+        strategy: first
+        extract: innerText
+        regex: 'DOI:\s*(.*)'
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Publisher')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Publisher:\s*(.*)'
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Print ISBN')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Print ISBN:\s*([0-9-]+)'
+      - type: css
+        selector: 'meta[name="citation_isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Online ISBN')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Online ISBN:\s*([0-9-]+)'
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.books-holder #tabstrip-1 p'
+        strategy: multi
+        extract: innerText
+
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.keyword-text-holder a'
+        strategy: multi
+        extract: innerText
+
+  book_version:
+    selectors:
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Edition')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Edition:\s*(.*)'
+
+  book_series:
+    selectors:
+      - type: xpath
+        selector: "//ul[@class='book-info-list']//li[strong[contains(., 'Series')]]"
+        strategy: first
+        extract: innerText
+        regex: 'Series:\s*(.*)'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: '.info-meta-block .title'
+        strategy: first
+        extract: innerText

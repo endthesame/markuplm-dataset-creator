@@ -1,0 +1,40 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.all-proceeding-container p strong'
+        strategy: first
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'p.doi-container a'
+        strategy: first
+        extract: text
+      - type: css
+        selector: 'p.doi-container a'
+        strategy: first
+        extract: attr
+        attr_name: href
+
+  conference_title:
+    selectors:
+      - type: css
+        selector: '#conferenceHeader .title-container'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: '.all-proceeding-container > div:nth-child(2)'
+        strategy: first
+        extract: innerText

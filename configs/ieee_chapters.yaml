@@ -1,0 +1,161 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: '.document-title'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="parsely-title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  book_title:
+    selectors:
+      - type: css
+        selector: '.book-chapter-mark-container'
+        strategy: multi
+        extract: innerText
+        regex: 'is part of:\s*(.*)'
+
+  date:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Copyright Year")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'Copyright Year:\s*(.*)'
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="parsely-author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//div[contains(@class, 'authors-info-container') and not(.//strong[contains(., 'Editor')])]//span[contains(@class, 'authors-info')]/descendant::button/span"
+        strategy: multi
+        extract: innerText
+
+  editor:
+    selectors:
+      - type: xpath
+        selector: "//div[contains(@class, 'authors-info-container') and .//strong[contains(., 'Editor')]]//span[contains(@class, 'authors-info')]/descendant::button/span"
+        strategy: multi
+        extract: innerText
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.authors-info a[href*="orcid.org"]'
+        strategy: multi
+        extract: attr
+        attr_name: href
+
+  doi:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "DOI:")]]'
+        strategy: first
+        extract: innerText
+        regex: 'DOI:\s*(.*)'
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Print ISBN")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Print ISBN:\s*(.*)'
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Online ISBN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISBN:\s*(.*)'
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Electronic ISBN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISBN:\s*(.*)'
+      - type: xpath
+        selector: '//div[strong[contains(text(), "CD ISBN")]]'
+        strategy: multi
+        extract: innerText
+        regex: 'ISBN:\s*(.*)'
+
+  publisher:
+    selectors:
+      - type: xpath
+        selector: '//div[contains(@class, "doc-abstract-publisher")]//*[contains(@class, "title")]/following-sibling::*[1]'
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: '//div[contains(@class, "publisher-title-tooltip")]//*[contains(@class, "title")]/following-sibling::*[1]'
+        strategy: first
+        extract: innerText
+
+  first_page:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Page")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Page\(s\):\s*(\d+)\s*-\s*\d+'
+
+  last_page:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Page")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Page\(s\):\s*\d+\s*-\s*(\d+)'
+
+  doc_type:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Content Type")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Content Type:\s*(.*)'
+
+  book_version:
+    selectors:
+      - type: xpath
+        selector: '//div[strong[contains(text(), "Edition")]]'
+        strategy: first
+        extract: innerText
+        regex: 'Edition:\s*(.*)'
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.document-abstract .abstract-text'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="twitter:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content

@@ -1,0 +1,171 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'h1[data-test-id="book-title"]'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  subtitle:
+    selectors:
+      - type: css
+        selector: 'h2.sub-title'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_online_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Online publication date')]]/dd"
+        strategy: first
+        extract: innerText
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Print publication year')]]/dd"
+        strategy: first
+        extract: innerText
+
+  author:
+    selectors:
+      - type: css
+        selector: '.author .author-name'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  editor:
+    selectors:
+      - type: xpath
+        selector: "//*[@class='author'][div[contains(., 'Edited')]]//*[@class='author-name']"
+        strategy: multi
+        extract: innerText
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: ".author .affiliation"
+        strategy: multi
+        extract: innerText
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.details a.doi'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.details a.doi'
+        strategy: first
+        extract: attr
+        attr_name: href
+
+  language:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_language"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Publisher')]]/dd"
+        strategy: first
+        extract: innerText
+
+  isbn:
+    selectors:
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Print ISBN')]]/dd"
+        strategy: first
+        extract: innerText
+
+  eisbn:
+    selectors:
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Online ISBN')]]/dd"
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_isbn"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '#information p'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_abstract"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="keywords"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  book_series:
+    selectors:
+      - type: xpath
+        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Series')]]/dd"
+        strategy: first
+        extract: innerText
