@@ -52,10 +52,6 @@ fields:
         strategy: first
         extract: innerText
         regex: 'Print publication year:\s*(.*)'
-      - type: xpath
-        selector: "//*[@class='details']/*[@class='spec']/*[@class='spec-row'][dt[contains(., 'Print publication year')]]/dd"
-        strategy: first
-        extract: innerText
 
   author:
     selectors:
