@@ -95,7 +95,7 @@ fields:
       #   extract: innerText
       #   regex: 'ISBN electronic: (\d+-\d+-\d+-\d+-\d+)'
       - type: xpath
-        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "ISBN electronic:")]]/div[@class="book-info__isbn-number"]'
+        selector: "//div[contains(concat(' ', normalize-space(@class), ' '), ' book-info__isbn ')][div[@class='book-info__isbn-text'][contains(text(), 'lectronic')]]"
         strategy: multi
         extract: text
       - type: xpath
@@ -107,7 +107,7 @@ fields:
   isbn:
     selectors:
       - type: xpath
-        selector: '//div[@class="book-info__isbn"][div[@class="book-info__isbn-text"][contains(text(), "Hardback") or contains(text(), "Paperback") or contains(text(), "Print")]]/div[@class="book-info__isbn-number"]'
+        selector: '//div[contains(concat(" ", normalize-space(@class), " "), " book-info__isbn ")][div[contains(concat(" ", normalize-space(@class), " "), " book-info__isbn-text ")][contains(text(), "ardback") or contains(text(), "aperback") or contains(text(), "rint")]]/div[contains(concat(" ", normalize-space(@class), " "), " book-info__isbn-number ")]'
         strategy: multi
         extract: text
       - type: xpath
