@@ -81,7 +81,7 @@ fields:
   abstract:
     selectors:
       - type: xpath
-        selector: //div[contains(@class, 'abstractSection') and p[normalize-space(.) != 'No abstract available.']]"
+        selector: "//div[contains(@class, 'abstractSection') and p[normalize-space(.) != 'No abstract available.']]"
         strategy: first
         extract: innerText
 
