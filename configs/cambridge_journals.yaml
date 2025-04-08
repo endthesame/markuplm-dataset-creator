@@ -1,0 +1,237 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#maincontent h1'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '.row.book-title .title'
+        strategy: multi
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_online_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.published-date p strong'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.contributors .contributor-type__contributor span[data-v-63dfaf6e]:not(.sr-only)'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: '.author .more-by-this-author '
+        strategy: multi
+        extract: text
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#authors-details .author div.d-sm-flex span span'
+        strategy: multi
+        extract: text
+
+  orcid:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_orcid"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-authors .al-orcid-info-wrap a'
+        strategy: multi
+        extract: text
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="dc.identifier"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: "//*[contains(concat(' ', normalize-space(@class), ' '), ' meta-info ')]//a[contains(text(), 'doi.org')]"
+        strategy: multi
+        extract: text
+      - type: css
+        selector: '.doi-data a .text
+        strategy: first
+        extract: text
+      - type: css
+        selector: '.doi-data a
+        strategy: first
+        extract: attr
+        attr_name: href      
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_journal_abbrev"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.journal__title .text'
+        strategy: first
+        extract: innerText
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.volume-issue'
+        strategy: first
+        extract: text
+        regex: 'Volume (\d+,?)'
+      - type: css
+        selector: '.content__journal'
+        strategy: first
+        extract: innerText
+        regex: 'Volume (\d+,?)'
+  
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.volume-issue'
+        strategy: first
+        extract: text
+        regex: 'Issue (\d+)'
+      - type: css
+        selector: '.content__journal'
+        strategy: first
+        extract: innerText
+        regex: 'Issue (\d+,?)'
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.content__journal'
+        strategy: first
+        extract: innerText
+        regex: ', pp. (\d+) - \d+'
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.content__journal'
+        strategy: first
+        extract: innerText
+        regex: ', pp. \d+ - (\d+)'
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_keywords"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.keywords .keywords__pills a span'
+        strategy: multi
+        extract: text
+
+  doc_type:
+    selectors:
+      - type: xpath
+        selector: "//dl[@class='article-details']/div[@class='row']/dt[contains(normalize-space(.), 'Type')]/following-sibling::dd[1]"
+        strategy: first
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.abstract p'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_abstract"]'
+        strategy: multi
+        extract: attr
+        attr_name: content

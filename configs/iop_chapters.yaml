@@ -1,0 +1,143 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'h1[itemprop="chapterName"]'
+        strategy: first
+        extract: innerText
+
+  book_title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_inbook_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#wd-pub-name'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#wd-book-pubdate'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '#wd-bk-dates [itemprop="datePublished"]'
+        strategy: first
+        extract: innerText
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#wd-chapter-author [itemprop="name"]'
+        strategy: multi
+        extract: text
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#wd-bk-auth-aff p'
+        strategy: multi
+        extract: text
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '#wd-bk-doi a'
+        strategy: first
+        extract: text
+
+  eisbn:
+    selectors:
+      - type: css
+        selector: '#epubisbn'
+        strategy: first
+        extract: innerText
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'span.small'
+        strategy: first
+        extract: innerText
+        regex: 'Pages ([0-9-]+) to [0-9-]+'
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'span.small'
+        strategy: first
+        extract: innerText
+        regex: 'Pages ([0-9-]+) to [0-9-]+'
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: '#chapter-no'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="asset_type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.chapter-text'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: 'meta[name="citation_abstract"]'
+        strategy: first
+        extract: attr
+        attr_name: content

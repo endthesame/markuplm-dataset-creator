@@ -1,0 +1,206 @@
+# Конфигурация обработки HTML
+remove_tags:
+  - script
+  - style
+  - footer
+  - noscript
+
+fields:
+  title:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[property="og:title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-article-title'
+        strategy: first
+        extract: innerText
+
+  date:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publication_date"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.article-date'
+        strategy: first
+        extract: text
+
+  author:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-authors .al-author-name .linked-name'
+        strategy: multi
+        extract: text
+
+  affiliation:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_author_institution"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.wi-authors .info-card-author .info-card-affilitation .aff'
+        strategy: multi
+        extract: text
+
+  orcid:
+    selectors:
+      - type: css
+        selector: '.wi-authors .al-orcid-info-wrap a'
+        strategy: multi
+        extract: text
+
+  doi:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_doi"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.citation-doi a'
+        strategy: first
+        extract: text
+
+  journal:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_journal_title"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: 'meta[name="citation_journal_abbrev"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.ww-citation-primary em'
+        strategy: first
+        extract: text
+
+  issn:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issn"]'
+        strategy: multi
+        extract: attr
+        attr_name: content
+      - type: xpath
+        selector: '//div[@class="journal-footer-colophon"]//li[span[contains(text(),"Print ISSN")]]'
+        strategy: first
+        extract: innerText
+        regex: '\d{4}-\d{3}[\dX]'
+
+  eissn:
+    selectors:
+      - type: xpath
+        selector: '//div[@class="journal-footer-colophon"]//li[span[contains(text(),"Online ISSN")]]'
+        strategy: first
+        extract: innerText
+        regex: '\d{4}-\d{3}[\dX]'
+  
+  volume:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_volume"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.volume.issue'
+        strategy: first
+        extract: text
+        regex: 'Volume (\d+,?)'
+  
+  issue:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_issue"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.volume.issue'
+        strategy: first
+        extract: text
+        regex: 'Issue (\d+)'
+
+  first_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_firstpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  last_page:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_lastpage"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  pages:
+    selectors:
+      - type: css
+        selector: '.ww-citation-primary'
+        strategy: first
+        extract: text
+        regex: ': (\d+–\d+.)'
+
+  publisher:
+    selectors:
+      - type: css
+        selector: 'meta[name="citation_publisher"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+
+  keyword:
+    selectors:
+      - type: css
+        selector: '.content-metadata-keywords a'
+        strategy: multi
+        extract: text
+
+  doc_type:
+    selectors:
+      - type: css
+        selector: 'meta[property="og:type"]'
+        strategy: first
+        extract: attr
+        attr_name: content
+      - type: css
+        selector: '.article-client_type'
+        strategy: first
+        extract: text
+
+  abstract:
+    selectors:
+      - type: css
+        selector: '.abstract p'
+        strategy: multi
+        extract: innerText
+      - type: css
+        selector: 'meta[property="og:description"]'
+        strategy: first
+        extract: attr
+        attr_name: content
