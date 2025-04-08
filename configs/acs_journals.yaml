@@ -39,7 +39,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        regex: '\d{4}'
       - type: css
         selector: '.cit-year-info'
         strategy: multi
@@ -85,8 +84,8 @@ fields:
         extract: attr
         attr_name: content
       - type: css
-        selector: '.aJhp_link, .article_header-journal'
-        strategy: first
+        selector: '.article_header-journal'
+        strategy: multi
         extract: innerText
 
   publisher:
@@ -96,10 +95,12 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.NLM_publisher-name'
+        strategy: first
+        extract: innerText
+      - type: css
+        selector: '[property="publisher"]'
         strategy: first
         extract: innerText
 
@@ -119,21 +120,13 @@ fields:
         extract: text
         regex: '\d+'
 
-  first_page:
+  pages:
     selectors:
       - type: css
         selector: '.cit-pageRange'
         strategy: first
         extract: text
-        regex: '(\d+)–\d+'
-
-  last_page:
-    selectors:
-      - type: css
-        selector: '.cit-pageRange'
-        strategy: first
-        extract: text
-        regex: '\d+–(\d+)'
+        #regex: '\d+–\d+'
 
   language:
     selectors:

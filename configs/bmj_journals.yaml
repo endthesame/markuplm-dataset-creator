@@ -13,18 +13,10 @@ fields:
         selector: '#page-title'  # CSS/XPath выражение
         strategy: first  # Стратегия: first/multi
         extract: text  # Извлекать: text/attr
-        post_process:  # Постобработка:
-          - strip      # Удаление пробелов
-          #- unescape   # HTML-декодирование
-        # validate:      # Валидация:
-        #   - required   # Обязательное поле
-        #   - max_length: 300  # Макс. длина
-        # bio_scope: element
       - type: xpath
         selector: '//meta[@name="citation_title"]'
         extract: attr
         attr_name: content
-        # bio_scope: element
 
   author:
     selectors:
@@ -33,21 +25,15 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: 'meta[name="DC.Contributor"]'
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.contributor-list .contributor .name'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   date:
     selectors:
@@ -55,32 +41,16 @@ fields:
         selector: 'meta[name="citation_publication_date"]'  # Регулярное выражение
         extract: attr
         attr_name: content
-        #regex: '(\d{4}-\d{2}-\d{2})'   # Извлечение части
-        # post_process:
-        #   - normalize_date  # Нормализация даты
-        # validate:
-        #   - date
-        # bio_scope: element
       - type: css
         selector: '.highwire-cite-published-year'  # Регулярное выражение
         strategy: first
         extract: text
-        regex: '(\d{4})'   # Извлечение части
-        # post_process:
-        #   - normalize_date  # Нормализация даты
-        # validate:
-        #   - date
-        # bio_scope: element
+        #regex: '(\d{4})'   # Извлечение части
       - type: css
         selector: 'meta[name="DC.Date"]'  # Регулярное выражение
         extract: attr
         attr_name: content
-        #regex: '(\d{4}-\d{2}-\d{2})'   # Извлечение части
-        # post_process:
-        #   - normalize_date  # Нормализация даты
-        # validate:
-        #   - date
-        # bio_scope: element
+
   doi:
     selectors:
       - type: css
@@ -88,14 +58,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.highwire-cite-doi a'
         strategy: first
         extract: text
-        post_process:
-          - strip
         regex: 'https?://doi\.org/10\.\S+'
 
   issn:
@@ -105,8 +71,6 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   journal:
     selectors:
@@ -115,14 +79,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.highwire-cite-journal'
         strategy: first
         extract: text
-        post_process:
-          - strip
 
   publisher:
     selectors:
@@ -131,15 +91,11 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: 'meta[name="DC.Publisher"]'
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   first_page:
     selectors:
@@ -148,8 +104,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   last_page:
     selectors:
@@ -158,8 +112,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   language:
     selectors:
@@ -168,8 +120,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   volume:
     selectors:
@@ -178,14 +128,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.highwire-cite-volume-issue'
         strategy: first
         extract: text
-        post_process:
-          - strip
 
   issue:
     selectors:
@@ -194,8 +140,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   abstract:
     selectors:
@@ -204,14 +148,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.article .abstract'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   affiliation:
     selectors:
@@ -220,8 +160,6 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   orcid:
     selectors:
@@ -230,16 +168,8 @@ fields:
         strategy: multi
         extract: attr
         attr_name: href
-        post_process:
-          - strip
       - type: css
         selector: 'meta[name="citation_author_orcid"]'
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
-
-# Пользовательские валидаторы
-validators:
-  max_length: '\S{1,120}'  # Регулярное выражение

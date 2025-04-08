@@ -102,13 +102,18 @@ fields:
   eisbn:
     selectors:
       - type: xpath
+        selector: "//div[contains(concat(' ', normalize-space(@class), ' '), ' book-info__isbn ')][div[@class='book-info__isbn-text'][contains(text(), 'lectronic')]]/div[@class='book-info__isbn-number']"
+        strategy: multi
+        extract: text
+      - type: xpath
         selector: "//div[contains(concat(' ', normalize-space(@class), ' '), ' book-info__isbn ')][div[@class='book-info__isbn-text'][contains(text(), 'lectronic')]]"
         strategy: multi
         extract: text
       - type: xpath
         selector: '//div[@id="getCitation"]/div[@class="citation-isbn"][span[contains(text(), "ISBN (electronic)")]]'
         strategy: multi
-        extract: text
+        extract: innerText
+        regex: ':\s*(.*)'
 
   isbn:
     selectors:
@@ -119,7 +124,8 @@ fields:
       - type: xpath
         selector: '//div[@id="getCitation"]/div[@class="citation-isbn"][span[contains(text(), "ISBN (print)")]]'
         strategy: multi
-        extract: text
+        extract: innerText
+        regex: ':\s*(.*)'
 
   book_series:
     selectors:

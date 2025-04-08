@@ -116,7 +116,7 @@ fields:
         selector: 'span.small'
         strategy: first
         extract: innerText
-        regex: 'Pages ([0-9-]+) to [0-9-]+'
+        regex: 'Pages [0-9-]+ to ([0-9-]+)'
 
   doc_type:
     selectors:

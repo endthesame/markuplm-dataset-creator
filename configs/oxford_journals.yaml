@@ -2,7 +2,6 @@
 remove_tags:           # Удаляемые HTML-теги
   - script
   - style
-  - footer
   - noscript
 
 # Поля для извлечения
@@ -13,8 +12,6 @@ fields:
         selector: '.title-wrap h1.wi-article-title'  # CSS/XPath выражение
         strategy: first  # Стратегия: first/multi
         extract: innerText  # Извлекать: text/attr/innerText
-        post_process:  # Постобработка:
-          - strip      # Удаление пробелов
       - type: xpath
         selector: '//meta[@name="citation_title"]'
         extract: attr
@@ -27,15 +24,10 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
-
       - type: css
         selector: '.wi-authors .al-authors-list .al-author-name-more .linked-name'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   date:
     selectors:
@@ -48,7 +40,6 @@ fields:
         selector: '.ww-citation-date-wrap .citation-date'  # Регулярное выражение
         strategy: first
         extract: text
-        regex: '(\d{4})'   # Извлечение части
 
   doi:
     selectors:
@@ -57,15 +48,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
-
       - type: xpath
         selector: '//div[@class="ww-citation-primary"]/a[contains(text(), "doi.org/10.")]'
         strategy: first
         extract: text
-        post_process:
-          - strip
 
   issn:
     selectors:
@@ -96,14 +82,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.ww-citation-primary em'
         strategy: first
         extract: text
-        post_process:
-          - strip
 
   publisher:
     selectors:
@@ -112,9 +94,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
-          - title
 
   first_page:
     selectors:
@@ -123,8 +102,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   last_page:
     selectors:
@@ -133,8 +110,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   language:
     selectors:
@@ -143,8 +118,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   volume:
     selectors:
@@ -153,8 +126,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   issue:
     selectors:
@@ -163,17 +134,13 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   abstract:
     selectors:
       - type: css
         selector: '#ContentTab .abstract'
         strategy: first
-        extract: text
-        post_process:
-          - strip
+        extract: innerText
 
   affiliation:
     selectors:
@@ -182,8 +149,6 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
 
   doc_type:
     selectors:
@@ -191,8 +156,6 @@ fields:
         selector: '.journal-info__format-label'
         strategy: first
         extract: text
-        post_process:
-          - strip
   
   keyword:
     selectors:
@@ -201,5 +164,3 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip

@@ -101,11 +101,11 @@ fields:
         strategy: multi
         extract: text
       - type: css
-        selector: '.doi-data a .text
+        selector: '.doi-data a .text'
         strategy: first
         extract: text
       - type: css
-        selector: '.doi-data a
+        selector: '.doi-data a'
         strategy: first
         extract: attr
         attr_name: href      
@@ -163,7 +163,7 @@ fields:
       - type: css
         selector: '.volume-issue'
         strategy: first
-        extract: text
+        extract: innerText
         regex: 'Issue (\d+)'
       - type: css
         selector: '.content__journal'

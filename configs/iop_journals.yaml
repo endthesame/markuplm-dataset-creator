@@ -13,14 +13,10 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: '.wd-jnl-art-title'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   date:
     selectors:
@@ -29,7 +25,6 @@ fields:
         strategy: first
         extract: attr
         attr_name: content
-        regex: '(\d{4}-\d{2}-\d{2})'
       - type: css
         selector: '.wd-jnl-art-pub-date'
         strategy: first
@@ -48,21 +43,15 @@ fields:
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: 'meta[name="dc.creator"]'
         strategy: multi
         extract: attr
         attr_name: content
-        post_process:
-          - strip
       - type: css
         selector: 'span[itemprop="author"] span[itemprop="name"]'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   doi:
     selectors:
@@ -92,8 +81,6 @@ fields:
         selector: '.wd-jnl-art-breadcrumb-title span a'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   issn:
     selectors:
@@ -172,8 +159,6 @@ fields:
         selector: '[class*="keyword"][class*="wd-jnl"] p'
         strategy: first
         extract: innerText
-        post_process:
-          - strip
 
   abstract:
     selectors:
@@ -181,8 +166,6 @@ fields:
         selector: '.wd-jnl-art-abstract p'
         strategy: multi
         extract: innerText
-        post_process:
-          - strip
 
   affiliation:
     selectors:
